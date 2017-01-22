@@ -43,5 +43,9 @@
         "single"
       ]
     }
+  },
+  "dependencies": {
+    "font-awesome": "^4.7.0",
+    "octicons": "^5.0.1"
   }
 }

@@ -50,6 +50,24 @@ gulp.task('images', () => {
     .pipe(gulp.dest('dist/images'));
 });
 
+
+gulp.task('fontAwesome', () => {
+  return gulp.src('app/bower_components/font-awesome/fonts/**.*')
+    .pipe($.if($.if.isFile, $.cache($.imagemin({
+      progressive: true,
+      interlaced: true,
+      // don't remove IDs from SVGs, they are often used
+      // as hooks for embedding and styling
+      svgoPlugins: [{cleanupIDs: false}]
+    }))
+      .on('error', function (err) {
+        console.log(err);
+        this.end();
+      })))
+    .pipe(gulp.dest('dist/fonts'));
+});
+
+
 gulp.task('html',  () => {
   return gulp.src('app/*.html')
     .pipe($.useref({searchPath: ['.tmp', 'app', '.']}))
@@ -126,7 +144,7 @@ gulp.task('package', function () {
 gulp.task('build', (cb) => {
   runSequence(
     'lint', 'babel', 'chromeManifest',
-    ['html', 'images', 'extras'],
+    ['html', 'images', 'extras', 'fontAwesome'],
     'size', cb);
 });
 
