@@ -20,3 +20,7 @@ table tbody th {
 #tureng {
   background-color: rgb(155, 10, 25);
 }
+
+.coming-soon {
+  display: none;
+}

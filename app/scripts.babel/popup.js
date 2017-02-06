@@ -1,12 +1,20 @@
 'use strict';
 
+const baseURL = 'http://multisozluk.herokuapp.com';
+
 chrome.tabs.executeScript({
-  code: 'var selection = window.getSelection();if (selection.toString().length > 0){window.getSelection().toString();}else {selection.modify("move", "backward", "word");selection.modify("extend", "forward", "word");window.getSelection().toString();}'
+    code: 'var selection = window.getSelection();if (selection.toString().length > 0){window.getSelection().toString();}else {selection.modify("move", "backward", "word");selection.modify("extend", "forward", "word");window.getSelection().toString();}'
 }, function (selection) {
-  let selected = selection[0].trim();
-  document.getElementById('search-input').value = selected;
-  if (selected.length > 0) tureng(selected);
+
+    let selected = selection[0].trim();
+    document.getElementById('search-input').value = selected;
+    if (selected.length > 0) tureng(selected);
+
 });
+
+function refreshTooltips() {
+    $('[data-toggle="tooltip"]').tooltip();
+}
 
 function Word(id, usage, word, type, definition, definitionType) {
   this.id = id;
@@ -23,6 +31,86 @@ function notFound(str) {
       <strong>Maalesef,</strong> bir sonuç bulamadık, kelimeyi basitleştirmeyi deneyin ya da <a href="https://www.google.com/search?q=${str}" target="_blank" ><i class="fa fa-google" aria-hidden="true"></i>oogle</a>
     </div>
   `)
+}
+
+function injectMSW(dictionary = 'tureng') {
+
+    chrome.storage.sync.get({
+        jwt: '',
+    }, function(items) {
+        if (items.jwt.length > 3) {
+            if (dictionary == 'tureng') {
+                $('table').each(function (i, el) {
+                    $(el).find('tr:not(:first)').append(`<td class="text-center"><i class="fa fa-bookmark-o bookmark" aria-hidden="true"></i></td>`);
+                    $(el).find('thead tr').append(`<th></th>`);
+
+                });
+
+                $('.bookmark').click((el)=>{
+                    if ($(el.target).hasClass('fa-bookmark') || $(el.target).hasClass('fa-bookmark-o')) {
+                        if ($(el.target).hasClass('fa-bookmark-o')) {
+                            const word = ($(el.target).parent().parent().find(':nth-child(2)'))
+                                .clone().children().remove().end().text();
+
+                            $.ajax({
+                                method: 'POST',
+                                url: baseURL + '/api/tureng' + '?name=' + word.trim(),
+                                headers: {
+                                  'Authorization': 'Bearer ' + items.jwt
+                                },
+                                beforeSend: function () {
+                                    $(el.target).removeClass('fa-bookmark-o').removeClass('fa-bookmark').addClass('fa-refresh fa-spin fa-fw');
+                                },
+                                complete: function (data) {
+                                  const response = JSON.parse(data.responseText);
+                                  $(el.target).removeClass('fa-refresh fa-spin fa-fw');
+                                    
+                                  if (response.error == "token_expired") {
+                                      console.log('Yeniden token almaniz gerekiyor');
+
+                                      $('body').append(
+                                        `<div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="myModal">
+                                          <div class="modal-dialog modal-sm">
+                                            <div class="modal-content">
+                                              <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">token_expired</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                  <span aria-hidden="true">&times;</span>
+                                                </button>
+                                              </div>
+                                              <div class="modal-body">
+                                                    Yeniden token almaniz gerekiyor
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>`);
+                                      $('#myModal').modal('show');
+                                  }
+
+                                  if (response.status == "already_in_list") {
+                                      console.log('Oge halihazirda listenizde mevcut');
+                                      $(el.target).attr('data-toggle', 'tooltip')
+                                          .attr('data-placement','left')
+                                          .attr('title', 'Oge halihazirda listenizde mevcut');
+                                      refreshTooltips();
+                                  }
+                                }
+                            })
+                                .done(function( msg ) {
+                                    $(el.target).addClass('fa-bookmark');
+                                    $(el.target).css('color', 'green');
+                                });
+                        }
+
+
+                    }
+
+
+                });
+
+            }
+        }
+    });
 }
 
 function tureng(str) {
@@ -75,7 +163,7 @@ function tureng(str) {
           let eachRow = $(this).find('tr');
 
           $('#content').append(`
-            <table class="table table-striped">
+            <table class="table table-striped table-hover">
               <thead class="thead-default">
                 <tr>
                   <th>#</th>
@@ -91,7 +179,7 @@ function tureng(str) {
           let array = $.map(eachRow, function(value, index) {
             return [value];
           });
-          console.log(array[array.length-1]);
+
           array.shift();
           array.forEach((el)=>{
             if ($(el).find('td').eq(0).attr('colspan') == 2 && $(el).find('td b').length > 0) {
@@ -113,7 +201,7 @@ function tureng(str) {
             $('#content table tbody:last').append(`
           <tr>
             <th scope="row" class="align-middle"">${e.usage}</th>
-            <td>${e.word} ${e.type != '' ? '(' + e.type + ')' : '' }</td>
+            <td>${e.word} ${e.type != '' ? '<small>(' + e.type + ')</small>' : '' }</td>
             <td>${e.definition} ${e.definitionType != '' ? '(' + e.definitionType + ')' : '' }</td>
           </tr>
           `);
@@ -122,8 +210,10 @@ function tureng(str) {
         $( "table thead" ).click(function (e) {
           const getParentTable = $(e.target).parent().parent().parent()[0];
           $(getParentTable).find('tbody').first().fadeToggle('fast')
-          console.log();
         });
+
+        injectMSW('tureng');
+
       }
     }
   }).done(()=>document.getElementById('loading').style.display = 'none');
@@ -145,5 +235,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
   });
 
+    $('[data-toggle="tooltip"]').tooltip();
 
 });

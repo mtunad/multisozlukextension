@@ -1,24 +1,153 @@
-<!doctype html>
-<html>
-  <head>
-    <!-- build:css styles/options-vendor.css -->
-    <!-- bower:css -->
-    <!-- endbower -->
-    <!-- endbuild -->
-    <!-- build:css styles/main.css -->
-    <link href="styles/main.css" rel="stylesheet">
-    <!-- endbuild -->
-  </head>
-  <body>
-    <h1>'Allo, 'Allo!</h1>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
 
-    <!-- build:js scripts/options-vendor.js -->
-    <!-- bower:js -->
-    <!-- endbower -->
-    <!-- endbuild -->
 
-    <!-- build:js scripts/options.js -->
-    <script src="scripts/options.js"></script>
-    <!-- endbuild -->
-  </body>
+  <title>Multi Sozluk</title>
+
+  <!-- build:css styles/options-vendor.css -->
+  <!-- bower:css -->
+  <!-- endbower -->
+  <!-- endbuild -->
+  <!-- build:css styles/main.css -->
+  <link href="styles/main.css" rel="stylesheet">
+  <style>
+    body{padding-top:4.5rem}
+  </style>
+  <!-- endbuild -->
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-toggleable-md navbar-inverse fixed-top bg-inverse">
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <a class="navbar-brand" href="http://multisozluk.herokuapp.com">Multi Sozluk <small></small></a>
+  <div class="collapse navbar-collapse" id="navbarCollapse">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="http://multisozluk.herokuapp.com/">Web</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="http://multisozluk.herokuapp.com/login">Giriş</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="http://multisozluk.herokuapp.com/register">Kayıt Ol</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="jumbotron" id="webTokenOption">
+    <div class="d-flex justify-content-end">
+      <div class="mr-auto p-2"><h3>Multi Sozluk Web anahtarı</h3></div>
+      <div class="p-2"></div>
+    </div>
+
+    <p class="lead"><a href="http://multisozluk.herokuapp.com/setting">multisozluk.herokuapp.com/setting</a> üzerinden alabileceğiniz anahtar ile Tureng'te aradığınız kelimeleri arşivleyebilir, dilediğiniz yerden kelimelerinize çalışabilirsiniz. İleride eklenecek faydalı özelliklerle kelime hafızanızı güçlendirebilirsiniz.</p>
+    <p>Anahtarın geçerli olduğundan ve tamamını kopyaladığınızdan emin olun.</p>
+
+
+    <div class="row">
+      <div class="col">
+        <form class="form-group">
+          <fieldset>
+            <input class="form-control" id="webToken" type="text" placeholder="multisozluk.herokuapp.com/setting üzerinden aldığınız anahtar">
+          </fieldset>
+        </form>
+      </div>
+      <div class="col">
+        <button type="button" class="btn btn-copy btn-primary" id="copy-button">Kaydet</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="jumbotron coming-soon">
+    <div class="d-flex justify-content-end">
+      <div class="mr-auto p-2"><h3>Sağ tık içerik menüsü</h3></div>
+      <div class="p-2"><a class="btn btn-outline-primary" href="#" role="button">YAKINDA &raquo;</a></div>
+    </div>
+
+    <p class="lead">Tarayıcı ile açılan PDF belgelerinde eklenti butonu çalışmadığından, bu opsiyon sayesinde sağtık menüsünü kullanabilirsiniz.</p>
+    <p>Tarayıcıyı yeniden başlatmanız gerekir.</p>
+  </div>
+
+  <div class="jumbotron coming-soon">
+    <div class="d-flex justify-content-end">
+      <div class="mr-auto p-2"><h3>Kelimelerin dictionary.com üzerindeki zorluk indeksini göster.</h3></div>
+      <div class="p-2"><a class="btn btn-outline-primary" href="#" role="button">YAKINDA &raquo;</a></div>
+    </div>
+
+    <p class="lead"></p>
+
+  </div>
+
+  <div class="jumbotron coming-soon">
+    <div class="d-flex justify-content-end">
+      <div class="mr-auto p-2"><h3>Tıklanan sözcükleri otomatik olarak seçip, popupta arar.</h3></div>
+      <div class="p-2"><a class="btn btn-outline-primary" href="#" role="button">YAKINDA &raquo;</a></div>
+    </div>
+
+    <p class="lead">Bir kelimeyi başından sonuna kadar seçmenize gerek yok. Kelimenin herhangi bir noktasına
+      bir tık yapmanız yeterli. İmleç görünmese bile, eklenti butonuna bastığınızda tıkladığınız konumdaki
+      kelimeyi eklenti yakalayıp, arama işlevini yapacak. <a href="http://i.giphy.com/3o7WTxYHrdfwmjH2P6.gif" target="_blank">GIF</a></p>
+    <p>Tarayıcıyı yeniden başlatmanız gerekir.</p>
+  </div>
+
+
+  <div class="row">
+    <div class="col-lg-4 coming-soon">
+      <h2>Kısayol</h2>
+      <p>Multi Sözlük popupının açılması için varsayılan tanımlı kısayol <code>Alt+D</code>'dir.</p>
+
+      <p>Değiştirmek isterseniz <strong>Chrome uzantılar sayfası</strong>nın sonundaki <code>Klavye Kısayolları</code>
+        kısmından değiştirebilirsiniz.</p>
+
+      <p>Her sözlük için bir kısayol atayabilirsiniz.  Chrome'un
+        <a href="https://developer.chrome.com/extensions/faq" title="https://developer.chrome.com/extensions/faq">kısıtlaması</a> nedeniyle diğer sözlüklerde kısayol ile aradığınızda eklenti popup'ı yerine sekme olarak açılması dolayısıyla olmakta.
+      </p>
+    </div><!-- /.col-lg-4 -->
+    <div class="col-lg-4">
+      <h2>İletişim</h2>
+      <p>
+        Görüşlerinizi, bildirimlerinizi ister <code>entriol@outlook.com</code>, isterseniz <a
+              href="https://chrome.google.com/webstore/detail/multi-s%C3%B6zl%C3%BCk/dgjbiomnpnpdickhihabccnbhpipddch">Chrome
+        Mağazası</a>, isterseniz de
+        <a href="https://github.com/entriol/multi-sozluk">GitHub reposu</a>ndan iletebilirsiniz.
+      </p>
+    </div><!-- /.col-lg-4 -->
+    <div class="col-lg-4">
+      <h2>Katkılar</h2>
+      <p>
+        <a href="http://tureng.com/">Tureng</a>
+      </p>
+    </div><!-- /.col-lg-4 -->
+  </div>
+
+</div>
+
+
+
+<!-- build:js scripts/options-vendor.js -->
+<!-- bower:js -->
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/tether/dist/js/tether.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- endbower -->
+<!-- endbuild -->
+
+<!-- build:js scripts/options.js -->
+<script src="scripts/options.js"></script>
+<!-- endbuild -->
+
+
+</body>
 </html>

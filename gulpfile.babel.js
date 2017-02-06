@@ -108,7 +108,7 @@ gulp.task('babel', () => {
 gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 
 gulp.task('watch', ['lint', 'babel'], () => {
-  $.livereload.listen();
+  //$.livereload.listen();
 
   gulp.watch([
     'app/*.html',
