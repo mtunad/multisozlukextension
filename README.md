@@ -9,3 +9,6 @@ Multi Sözlük, zamanla gelişimine devam edecek olan bir yabancı diller ile T�
 kelimeyi yakalayabilmesi için isteniyor.
 
 ### Katkılar
+1. [Tureng](http://tureng.com)
+1. Yükleniyor göstergesi: https://codepen.io/ademilter/pen/JDtcy
+

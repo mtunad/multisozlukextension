@@ -1,0 +1,124 @@
+/*
+PROGRESS INDICATOR
+Credit: https://codepen.io/ademilter/pen/JDtcy
+ */
+
+#loading {
+  width: 100px;
+  height: 100px;
+  margin: 30px auto;
+  position: relative;
+  display: none;
+}
+
+.outer-shadow, .inner-shadow, #timer {
+  z-index: 6;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.inner-shadow {
+  top: 50%;
+  left: 50%;
+  width: 80px;
+  height: 80px;
+  margin-left: -40px;
+  margin-top: -40px;
+  border-radius: 100%;
+  background-color: #dde6f0;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+#timer {
+  z-index: 1;
+  box-shadow: none;
+}
+
+.hold {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  clip: rect(0px, 100px, 100px, 50px);
+  -webkit-border-radius: 100%;
+  background-color: #fff;
+}
+
+.pie, .dot span {
+  background-color: #f50;
+}
+
+.pie {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-border-radius: 100%;
+  clip: rect(0px, 50px, 100px, 0px);
+}
+
+#left .pie {
+  z-index: 1;
+  -webkit-animation: left 4s linear both;
+}
+
+@-webkit-keyframes left {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(180deg);
+  }
+}
+#right {
+  z-index: 3;
+  -webkit-transform: rotate(180deg);
+}
+
+#right .pie {
+  -webkit-animation: right 4s linear both;
+  -webkit-animation-delay: 4s;
+}
+
+@-webkit-keyframes right {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(180deg);
+  }
+}
+.dot {
+  z-index: 2;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 50%;
+  height: 10px;
+  margin-top: -5px;
+  -webkit-animation: dot 8s linear both;
+  -webkit-transform-origin: 0% 50%;
+}
+
+.dot span {
+  position: absolute;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 100%;
+}
+
+@-webkit-keyframes dot {
+  0% {
+    -webkit-transform: rotate(-90deg);
+  }
+  50% {
+    -webkit-transform: rotate(90deg);
+    z-index: 4;
+  }
+  100% {
+    -webkit-transform: rotate(270deg);
+    z-index: 4;
+  }
+}

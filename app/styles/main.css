@@ -2,10 +2,21 @@
 @import '../bower_components/font-awesome/css/font-awesome.min.css';
 
 body {
-  width: 720px;
+  min-width: 780px;
 }
 
 table {
   overflow:scroll;
 }
 
+table tbody th {
+  font-size: small;
+}
+
+#search-input {
+  border-radius: 0;
+}
+
+#tureng {
+  background-color: rgb(155, 10, 25);
+}

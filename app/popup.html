@@ -9,16 +9,14 @@
     <!-- endbuild -->
     <!-- build:css styles/main.css -->
     <link href="styles/main.css" rel="stylesheet">
+    <link href="styles/loading.css" rel="stylesheet">
     <!-- endbuild -->
   </head>
   <body>
     <div class="btn-group btn-group-justified">
       <input type="text" class="form-control" id="search-input" placeholder="Search..." autocomplete="off">
-      <button type="button" class="btn btn-primary">Primary</button>
-      <button type="button" class="btn btn-secondary">Secondary</button>
-      <button type="button" class="btn btn-success">Success</button>
-      <button type="button" class="btn btn-info">Info</button>
-      <button type="button" class="btn btn-warning"><i class="fa fa-user-circle-o" aria-hidden="true"></i>
+      <button type="button" class="btn btn-primary" id="tureng">Tureng</button>
+      <button type="button" class="btn btn-secondary" id="settings"><i class="fa fa-sliders" aria-hidden="true"></i>
       </button>
     </div>
     <hr>
@@ -26,7 +24,26 @@
 
 
     <div class="container">
+
+      <div id='loading' class="">
+        <div class='outer-shadow'></div>
+        <div class='inner-shadow'></div>
+        <div class='timer'>
+          <div class='dot'>
+            <span></span>
+          </div>
+          <div class='hold' id='left'>
+            <div class='pie'></div>
+          </div>
+          <div class='hold' id='right'>
+            <div class='pie'></div>
+          </div>
+        </div>
+      </div>
+
+
       <div id="content">
+
 
       </div>
     </div>
@@ -35,7 +52,7 @@
 
     <!-- build:js scripts/popup-vendor.js -->
     <!-- bower:js -->
-    <script src="bower_components/jquery/dist/jquery.slim.min.js"></script>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/tether/dist/js/tether.min.js"></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <!-- endbower -->
