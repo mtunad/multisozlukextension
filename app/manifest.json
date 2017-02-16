@@ -51,5 +51,15 @@
     },
     "default_title": "Multi Sözlük",
     "default_popup": "popup.html"
+  },
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "windows": "Alt+D",
+        "mac": "Alt+D",
+        "chromeos": "Alt+D",
+        "linux": "Alt+D"
+      }
+    }
   }
 }
