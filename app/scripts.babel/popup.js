@@ -1,6 +1,6 @@
 'use strict';
 
-const baseURL = 'http://multisozluk.herokuapp.com';
+const baseURL = 'http://multisozluk.app';
 
 chrome.tabs.executeScript({
     code: 'var selection = window.getSelection();if (selection.toString().length > 0){window.getSelection().toString();}else {selection.modify("move", "backward", "word");selection.modify("extend", "forward", "word");window.getSelection().toString();}'
@@ -50,26 +50,32 @@ function injectMSW(dictionary = 'tureng') {
                     if ($(el.target).hasClass('fa-bookmark') || $(el.target).hasClass('fa-bookmark-o')) {
                         if ($(el.target).hasClass('fa-bookmark-o')) {
                             const word = ($(el.target).parent().parent().find(':nth-child(2)'))
-                                .clone().children().remove().end().text();
+                                .clone().children().remove().end().text().trim();
+
+                            const definition = $(el.target).parent().parent().find('td').eq(1)
+                                .clone().children().remove().end().text().trim();
+
+                            const direction = $(el.target).parent().parent().parent().parent().find('thead th').eq(1).text() == 'İngilizce' ? 'tr' : 'en';
+
 
                             $.ajax({
                                 method: 'POST',
-                                url: baseURL + '/api/tureng' + '?name=' + word.trim(),
+                                url: baseURL + '/api/tureng' + '?name=' + word + '&direction=' + direction  + '&definition='  + definition,
                                 headers: {
-                                  'Authorization': 'Bearer ' + items.jwt
+                                    'Authorization': 'Bearer ' + items.jwt
                                 },
                                 beforeSend: function () {
                                     $(el.target).removeClass('fa-bookmark-o').removeClass('fa-bookmark').addClass('fa-refresh fa-spin fa-fw');
                                 },
                                 complete: function (data) {
-                                  const response = JSON.parse(data.responseText);
-                                  $(el.target).removeClass('fa-refresh fa-spin fa-fw');
-                                    
-                                  if (response.error == "token_expired") {
-                                      console.log('Yeniden token almaniz gerekiyor');
+                                    const response = JSON.parse(data.responseText);
+                                    $(el.target).removeClass('fa-refresh fa-spin fa-fw');
 
-                                      $('body').append(
-                                        `<div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="myModal">
+                                    if (response.error == "token_expired") {
+                                        console.log('Yeniden token almaniz gerekiyor');
+
+                                        $('body').append(
+                                            `<div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="myModal">
                                           <div class="modal-dialog modal-sm">
                                             <div class="modal-content">
                                               <div class="modal-header">
@@ -84,16 +90,16 @@ function injectMSW(dictionary = 'tureng') {
                                             </div>
                                           </div>
                                         </div>`);
-                                      $('#myModal').modal('show');
-                                  }
+                                        $('#myModal').modal('show');
+                                    }
 
-                                  if (response.status == "already_in_list") {
-                                      console.log('Oge halihazirda listenizde mevcut');
-                                      $(el.target).attr('data-toggle', 'tooltip')
-                                          .attr('data-placement','left')
-                                          .attr('title', 'Oge halihazirda listenizde mevcut');
-                                      refreshTooltips();
-                                  }
+                                    if (response.status == "already_in_list") {
+                                        console.log('Oge halihazirda listenizde mevcut');
+                                        $(el.target).attr('data-toggle', 'tooltip')
+                                            .attr('data-placement','left')
+                                            .attr('title', 'Oge halihazirda listenizde mevcut');
+                                        refreshTooltips();
+                                    }
                                 }
                             })
                                 .done(function( msg ) {
@@ -202,7 +208,7 @@ function tureng(str) {
           <tr>
             <th scope="row" class="align-middle"">${e.usage}</th>
             <td>${e.word} ${e.type != '' ? '<small>(' + e.type + ')</small>' : '' }</td>
-            <td>${e.definition} ${e.definitionType != '' ? '(' + e.definitionType + ')' : '' }</td>
+            <td>${e.definition} ${e.definitionType != '' ? '<small>(' + e.definitionType + ')</small>' : '' }</td>
           </tr>
           `);
           })
