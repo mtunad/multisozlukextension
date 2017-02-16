@@ -33,18 +33,38 @@ function saveRightClickMenu() {
     });
 }
 
+function saveDifficultyIndex() {
+    const difficultyIndex = $('#difficultyIndex').text() == 'Aktif' ? false : true;
+
+    chrome.storage.sync.set({
+        difficultyIndex: difficultyIndex
+    }, function() {
+        if ($('#difficultyIndex').text() != 'Aktif') {
+            $('#difficultyIndex').addClass('btn-primary').removeClass('btn-outline-primary').text('Aktif');
+        } else {
+            $('#difficultyIndex').removeClass('btn-primary').addClass('btn-outline-primary').text('Aktifleştir');
+        }
+    });
+}
+
 function restore_options() {
     chrome.storage.sync.get({
         jwt: '',
-        rightClickMenu: false
+        rightClickMenu: false,
+        difficultyIndex: false
     }, function(items) {
         document.getElementById('webToken').value = items.jwt;
-        console.log(items.rightClickMenu);
         
         if (items.rightClickMenu) {
             $('#rightClickMenu').addClass('btn-primary').removeClass('btn-outline-primary').text('Aktif');
         } else {
             $('#rightClickMenu').removeClass('btn-primary').addClass('btn-outline-primary').text('Aktifleştir');
+        }
+
+        if (items.difficultyIndex) {
+            $('#difficultyIndex').addClass('btn-primary').removeClass('btn-outline-primary').text('Aktif');
+        } else {
+            $('#difficultyIndex').removeClass('btn-primary').addClass('btn-outline-primary').text('Aktifleştir');
         }
     });
 }
@@ -54,3 +74,5 @@ document.querySelector('#webTokenOption button').addEventListener('click',
     saveWebToken);
 document.querySelector('#rightClickMenu').addEventListener('click',
     saveRightClickMenu);
+document.querySelector('#difficultyIndex').addEventListener('click',
+    saveDifficultyIndex);

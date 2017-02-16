@@ -121,13 +121,36 @@ function injectMSW(dictionary = 'tureng') {
     });
 }
 
+function putDifficultyIndex(str) {
+    chrome.storage.sync.get({
+        difficultyIndex: false
+    }, function (items) {
+        if (items.difficultyIndex) {
+            $.ajax({
+                url: 'http://www.dictionary.com/browse/' + str,
+                type: 'GET',
+                success: function (data) {
+                    const difficulty = $(data).find('#difficulty-box');
+
+                    if (difficulty.length > 0) {
+                        $('#content').prepend(`<p class="text-right"><span class="badge badge-pill badge-info" id="difficultyIndex" title="dictionary.com'daki zorluk indeksi: ${difficulty.data('difficulty')}">${difficulty.find('.subtext')[0].innerText}</a></span></p>`);
+                    }
+
+                    $('#difficultyIndex').click(function () {
+                        window.open('http://dictionary.com/browse/' + str, '_blank');
+                    });
+                }
+            });
+        }
+    })
+}
+
 function tureng(str) {
   document.getElementById('search-input').value = str;
 
   str = encodeURIComponent(str);
 
   $('#content').html();
-
 
   document.getElementById('content').innerHTML = '';
   document.getElementById('loading').style.display = 'block';
@@ -221,6 +244,8 @@ function tureng(str) {
         });
 
         injectMSW('tureng');
+
+        putDifficultyIndex(str);
 
       }
     }
