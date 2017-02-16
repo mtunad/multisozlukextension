@@ -5,12 +5,18 @@ const baseURL = 'http://multisozluk.app';
 if (document.location.hash.length > 0) {
     tureng(document.location.hash.substr(1));
 } else {
-    chrome.tabs.executeScript({
-        code: 'var selection = window.getSelection();if (selection.toString().length > 0){window.getSelection().toString();}else {selection.modify("move", "backward", "word");selection.modify("extend", "forward", "word");window.getSelection().toString();}'
-    }, function (selection) {
-        let selected = selection[0].trim();
-        document.getElementById('search-input').value = selected;
-        if (selected.length > 0) tureng(selected);
+    chrome.storage.sync.get({
+        autoSelect: true
+    }, function (items) {
+        if (items.autoSelect == true) {
+            chrome.tabs.executeScript({
+                code: 'var selection = window.getSelection();if (selection.toString().length > 0){window.getSelection().toString();}else {selection.modify("move", "backward", "word");selection.modify("extend", "forward", "word");window.getSelection().toString();}'
+            }, function (selection) {
+                let selected = selection[0].trim();
+                document.getElementById('search-input').value = selected;
+                if (selected.length > 0) tureng(selected);
+            });
+        }
     });
 }
 
