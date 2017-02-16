@@ -2,15 +2,17 @@
 
 const baseURL = 'http://multisozluk.app';
 
-chrome.tabs.executeScript({
-    code: 'var selection = window.getSelection();if (selection.toString().length > 0){window.getSelection().toString();}else {selection.modify("move", "backward", "word");selection.modify("extend", "forward", "word");window.getSelection().toString();}'
-}, function (selection) {
-
-    let selected = selection[0].trim();
-    document.getElementById('search-input').value = selected;
-    if (selected.length > 0) tureng(selected);
-
-});
+if (document.location.hash.length > 0) {
+    tureng(document.location.hash.substr(1));
+} else {
+    chrome.tabs.executeScript({
+        code: 'var selection = window.getSelection();if (selection.toString().length > 0){window.getSelection().toString();}else {selection.modify("move", "backward", "word");selection.modify("extend", "forward", "word");window.getSelection().toString();}'
+    }, function (selection) {
+        let selected = selection[0].trim();
+        document.getElementById('search-input').value = selected;
+        if (selected.length > 0) tureng(selected);
+    });
+}
 
 function refreshTooltips() {
     $('[data-toggle="tooltip"]').tooltip();
@@ -71,7 +73,7 @@ function injectMSW(dictionary = 'tureng') {
                                     const response = JSON.parse(data.responseText);
                                     $(el.target).removeClass('fa-refresh fa-spin fa-fw');
 
-                                    if (response.error == "token_expired") {
+                                    if (response.error == 'token_expired') {
                                         console.log('Yeniden token almaniz gerekiyor');
 
                                         $('body').append(
@@ -93,7 +95,7 @@ function injectMSW(dictionary = 'tureng') {
                                         $('#myModal').modal('show');
                                     }
 
-                                    if (response.status == "already_in_list") {
+                                    if (response.status == 'already_in_list') {
                                         console.log('Oge halihazirda listenizde mevcut');
                                         $(el.target).attr('data-toggle', 'tooltip')
                                             .attr('data-placement','left')
@@ -213,7 +215,7 @@ function tureng(str) {
           `);
           })
         });
-        $( "table thead" ).click(function (e) {
+        $('table thead').click(function (e) {
           const getParentTable = $(e.target).parent().parent().parent()[0];
           $(getParentTable).find('tbody').first().fadeToggle('fast')
         });

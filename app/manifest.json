@@ -20,6 +20,7 @@
     "https://*/*",
     "background",
     "contentSettings",
+    "contextMenus",
     "storage"
   ],
   "options_ui": {
