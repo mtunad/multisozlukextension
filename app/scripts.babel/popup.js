@@ -139,7 +139,7 @@ function putDifficultyIndex(str) {
                     const difficulty = $(data).find('#difficulty-box');
 
                     if (difficulty.length > 0) {
-                        $('#content').prepend(`<p class="text-right"><span class="badge badge-pill badge-info" id="difficultyIndex" title="dictionary.com'daki zorluk indeksi: ${difficulty.data('difficulty')}">${difficulty.find('.subtext')[0].innerText}</a></span></p>`);
+                        $('#content').prepend(`<p class="text-right"><span class="badge badge-pill badge-info" id="difficultyIndex" title="dictionary.com'daki zorluk indeksi: ${safeResponse.cleanDomString(difficulty.data('difficulty'))}">${difficulty.find('.subtext')[0].innerText}</a></span></p>`);
                     }
 
                     $('#difficultyIndex').click(function () {
@@ -204,8 +204,8 @@ function tureng(str) {
               <thead class="thead-default">
                 <tr>
                   <th>#</th>
-                  <th>${$(eachRow[0]).find('.c2').text()}</th>
-                  <th>${$(eachRow[0]).find('.c3').text()}</th>
+                  <th>${safeResponse.cleanDomString($(eachRow[0]).find('.c2').text())}</th>
+                  <th>${safeResponse.cleanDomString($(eachRow[0]).find('.c3').text())}</th>
                 </tr>
               </thead>
               <tbody>
@@ -237,9 +237,9 @@ function tureng(str) {
           translations.forEach((e)=>{
             $('#content table tbody:last').append(`
           <tr>
-            <th scope="row" class="align-middle"">${e.usage}</th>
-            <td>${e.word} ${e.type != '' ? '<small>(' + e.type + ')</small>' : '' }</td>
-            <td>${e.definition} ${e.definitionType != '' ? '<small>(' + e.definitionType + ')</small>' : '' }</td>
+            <th scope="row" class="align-middle"">${safeResponse.cleanDomString(e.usage)}</th>
+            <td>${safeResponse.cleanDomString(e.word)} ${safeResponse.cleanDomString(e.type) != '' ? '<small>(' + safeResponse.cleanDomString(e.type) + ')</small>' : '' }</td>
+            <td>${safeResponse.cleanDomString(e.definition)} ${safeResponse.cleanDomString(e.definitionType) != '' ? '<small>(' + safeResponse.cleanDomString(e.definitionType) + ')</small>' : '' }</td>
           </tr>
           `);
           })
