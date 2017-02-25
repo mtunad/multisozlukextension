@@ -38,7 +38,9 @@ function notFound(str) {
     <div class="alert alert-warning" role="alert">
       <strong>Maalesef,</strong> bir sonuç bulamadık, kelimeyi basitleştirmeyi deneyin ya da <a href="https://www.google.com/search?q=${str}" target="_blank" ><i class="fa fa-google" aria-hidden="true"></i>oogle</a>
     </div>
-  `)
+  `);
+
+  document.getElementById('loading').style.display = 'none';
 }
 
 function injectMSW(dictionary = 'tureng') {
@@ -151,18 +153,23 @@ function putDifficultyIndex(str) {
     })
 }
 
-function tureng(str) {
+function sanitize(str) {
+  document.getElementById('content').innerHTML = '';
+
   document.getElementById('search-input').value = str;
 
-  str = encodeURIComponent(str);
+  //str = encodeURIComponent(str);
 
-  $('#content').html();
-
-  document.getElementById('content').innerHTML = '';
   document.getElementById('loading').style.display = 'block';
 
   document.getElementsByClassName('inner-shadow')[0].style.backgroundColor = '#'+((1<<24)*Math.random()|0).toString(16);
   $('.pie, .dot span').css('background-color', '#'+((1<<24)*Math.random()|0).toString(16) );
+
+  return str;
+}
+
+function tureng(str) {
+  str = sanitize(str);
 
   $.get({
     url: 'http://tureng.com/tr/turkce-ingilizce/' + str,
@@ -258,9 +265,174 @@ function tureng(str) {
   }).done(()=>document.getElementById('loading').style.display = 'none');
 }
 
+
+function tdk(str) {
+  str = sanitize(str);
+
+  $.ajax({
+    url: 'http://www.tdk.gov.tr/index.php?option=com_gts&arama=gts&kelime=' + str,
+    type: 'GET',
+    complete: function(xhr) {
+      if (xhr.status != 200) {
+        notFound(str);
+      }
+    },
+    success: function (data) {
+      if ($(data).find('table[id=hor-minimalist-a]').length < 1 && $(data).find('table[id=hor-minimalist-c]').length < 1) { // suggestion ya da kelimenin anlamı bulunamadıysa
+        notFound(str);
+      }
+      else {
+        if ($(data).find('table[id=hor-minimalist-c]').length > 0) {
+          $('#content')
+            .append(safeResponse.cleanDomString($(data).find('table[id=hor-minimalist-c]').html()))
+            .append('<hr />');
+          $("table[id=hor-minimalist-c]").each(function () {
+            $(this).removeAttr('width');
+          });
+        }
+        for (var i = 0; i < $(data).find('table[id=hor-minimalist-a]').length; i++) {
+          $('#content').append(safeResponse.cleanDomString($(data).find('table[id=hor-minimalist-a]')[i].outerHTML)).append('<hr />');
+        }
+        $("table[id=hor-minimalist-a]").each(function () {
+          $(this).removeAttr('width')
+        });
+      }
+
+      $('#content').find('a[target!="_blank"]')
+        .on('click', function (e) {
+          e.preventDefault();
+          document.getElementById('search-input').value = $(this).text();
+          tdk($(this).text());
+        })
+        .prepend('<br />');
+    }
+  }).done(()=>document.getElementById('loading').style.display = 'none');
+}
+
+
+
+function eksi(str, page) {
+  str = sanitize(str);
+
+  const xhr = new XMLHttpRequest();
+  if (typeof page !== 'undefined') {
+    xhr.open("GET", page, true);
+  } else {
+    xhr.open("GET", 'https://eksisozluk.com/?q=' + str, true); // pagination icin ?q='dan feragat.
+  }
+  xhr.onreadystatechange = function () {
+    document.getElementById('loading').style.display = 'none';
+
+    if (xhr.statusCode == 404) {
+      notFound(str);
+      return false;
+    }
+
+    if (xhr.readyState == 4) {
+      const responseURL = xhr.responseURL.split('?')[0];
+
+      const data = xhr.responseText;
+
+      if ($(data).find('#entry-list li').length < 1) {
+        $('#content').html(`<p>Aradığınız <strong>kelimeyi Ekşi Sözlük'te bulamadık!</strong> :( <br> Aşağıdaki de aradığınız değilse, kelimedeki ekleri silmek belki yardımcı olabilir ya da <a target="_blank" href="https://www.google.com/search?q=${str}">Google <i class="fi-eject"></i></a> </p>`);
+        if ($(data).find('a.suggested-title')) {
+          $('#content').append(safeResponse.cleanDomString($(data).find('a.suggested-title').parent().html()));
+        }
+      }
+      else {
+        for (var i = 0; i < $(data).find('#entry-list li').length; i++) {
+          const entry = safeResponse.cleanDomString($(data).find('#entry-list li')[i].outerHTML);
+          $('#content').append($(entry).find('.content'));
+
+          const auth_info = `<div class="text-right">
+    <p class="auth_info">${$(entry).find('.info .entry-author')[0].outerHTML} ${$(entry).find('.info .entry-date')[0].outerHTML}</p>
+</div>`;
+          $('#content').append(auth_info).append(`<hr />`);
+        }
+
+        if ($(data).find('.pager').length > 0) {
+          $('#content').append(`<select class="pager">`);
+
+          const currPage = $(data).find('.pager')[0].getAttribute('data-currentpage');
+
+          for (let i = 1; i <= $(data).find('.pager')[0].getAttribute('data-pagecount'); i++) {
+            if (i == currPage) {
+              $('#content .pager').append(`<option value="${responseURL}?p=${i}" selected>${i}</option>`);
+            }
+            else {
+              $('#content .pager').append(`<option value="${responseURL}?p=${i}">${i}</option>`);
+            }
+          }
+
+          $('#content .pager').on('change', function (e) {
+            //var optionSelected = $("option:selected", this);
+            const valueSelected = this.value;
+            eksi(str, valueSelected);
+          });
+        }
+
+        $('.auth_info a').on('click', function (e) {
+          e.preventDefault();
+          window.open('https://eksisozluk.com' + $(this).attr('href'))
+        });
+
+        $('.content a[class=url]').on('click', function (e) {
+          e.preventDefault();
+          window.open($(this).attr('href'))
+        });
+      }
+      $('.content a[class=b], a.suggested-title').on('click', function (e) {
+        e.preventDefault();
+        document.getElementById('search-input').value = $(this).text();
+        eksi($(this).text());
+      });
+    }
+  };
+  xhr.send();
+}
+
+function urban(str) {
+  str = sanitize(str);
+
+  $.ajax({
+    url: 'http://www.urbandictionary.com/define.php?term=' + str,
+    type: 'GET',
+    success: function (data) {
+      if ($(data).find('.no-results').length > 0) {
+        notFound(str);
+      }
+      else {
+        const meanings = $(data).find(".meaning");
+        const examples = $(data).find(".example");
+
+        for (let i = 0; i < meanings.length; i++) {
+          $('#content').append(`<strong>${safeResponse.cleanDomString(meanings[i].outerHTML)}</strong><em>${ safeResponse.cleanDomString(examples[i].outerHTML) }</em><hr/>`);
+        }
+      }
+
+      $('#content').find('.meaning a, .example a').on('click', function (e) {
+        e.preventDefault();
+        urban($(this).text());
+      });
+    }
+  }).done(()=>document.getElementById('loading').style.display = 'none');
+}
+
 document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('tureng').addEventListener('click', ()=>{
     tureng(document.getElementById('search-input').value);
+  });
+
+  document.getElementById('tdk').addEventListener('click', ()=>{
+    tdk(document.getElementById('search-input').value);
+  });
+
+  document.getElementById('eksi').addEventListener('click', ()=>{
+    eksi(document.getElementById('search-input').value);
+  });
+
+  document.getElementById('urban').addEventListener('click', ()=>{
+    urban(document.getElementById('search-input').value);
   });
 
   document.getElementById('settings').addEventListener('click', ()=>{
@@ -269,6 +441,16 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
   document.getElementById('search-input').addEventListener('keydown', function (e) {
+    if (e.keyCode == 13 && event.shiftKey) {
+      tdk(document.getElementById('search-input').value);
+      return false;
+    }
+
+    if (e.keyCode == 13 && event.ctrlKey) {
+      eksi(document.getElementById('search-input').value);
+      return false;
+    }
+
     if (e.keyCode === 13) {
       tureng(document.getElementById('search-input').value);
     }
