@@ -306,7 +306,7 @@ function tdk(str) {
         })
         .prepend('<br />');
     }
-  }).done(()=>document.getElementById('loading').style.display = 'none');;
+  }).done(()=>document.getElementById('loading').style.display = 'none');
 }
 
 
@@ -389,7 +389,33 @@ function eksi(str, page) {
     }
   };
   xhr.send();
+}
 
+function urban(str) {
+  str = sanitize(str);
+
+  $.ajax({
+    url: 'http://www.urbandictionary.com/define.php?term=' + str,
+    type: 'GET',
+    success: function (data) {
+      if ($(data).find('.no-results').length > 0) {
+        notFound(str);
+      }
+      else {
+        const meanings = $(data).find(".meaning");
+        const examples = $(data).find(".example");
+
+        for (let i = 0; i < meanings.length; i++) {
+          $('#content').append(`<strong>${safeResponse.cleanDomString(meanings[i].outerHTML)}</strong><em>${ safeResponse.cleanDomString(examples[i].outerHTML) }</em><hr/>`);
+        }
+      }
+
+      $('#content').find('.meaning a, .example a').on('click', function (e) {
+        e.preventDefault();
+        urban($(this).text());
+      });
+    }
+  }).done(()=>document.getElementById('loading').style.display = 'none');
 }
 
 document.addEventListener('DOMContentLoaded', ()=>{
@@ -403,6 +429,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   document.getElementById('eksi').addEventListener('click', ()=>{
     eksi(document.getElementById('search-input').value);
+  });
+
+  document.getElementById('urban').addEventListener('click', ()=>{
+    urban(document.getElementById('search-input').value);
   });
 
   document.getElementById('settings').addEventListener('click', ()=>{
