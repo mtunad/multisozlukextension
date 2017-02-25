@@ -38,7 +38,9 @@ function notFound(str) {
     <div class="alert alert-warning" role="alert">
       <strong>Maalesef,</strong> bir sonuç bulamadık, kelimeyi basitleştirmeyi deneyin ya da <a href="https://www.google.com/search?q=${str}" target="_blank" ><i class="fa fa-google" aria-hidden="true"></i>oogle</a>
     </div>
-  `)
+  `);
+
+  document.getElementById('loading').style.display = 'none';
 }
 
 function injectMSW(dictionary = 'tureng') {
@@ -151,18 +153,23 @@ function putDifficultyIndex(str) {
     })
 }
 
-function tureng(str) {
+function sanitize(str) {
+  document.getElementById('content').innerHTML = '';
+
   document.getElementById('search-input').value = str;
 
   str = encodeURIComponent(str);
 
-  $('#content').html();
-
-  document.getElementById('content').innerHTML = '';
   document.getElementById('loading').style.display = 'block';
 
   document.getElementsByClassName('inner-shadow')[0].style.backgroundColor = '#'+((1<<24)*Math.random()|0).toString(16);
   $('.pie, .dot span').css('background-color', '#'+((1<<24)*Math.random()|0).toString(16) );
+
+  return str;
+}
+
+function tureng(str) {
+  str = sanitize(str);
 
   $.get({
     url: 'http://tureng.com/tr/turkce-ingilizce/' + str,
@@ -258,9 +265,57 @@ function tureng(str) {
   }).done(()=>document.getElementById('loading').style.display = 'none');
 }
 
+
+function tdk(str) {
+  str = sanitize(str);
+
+  $.ajax({
+    url: 'http://www.tdk.gov.tr/index.php?option=com_gts&arama=gts&kelime=' + str,
+    type: 'GET',
+    complete: function(xhr) {
+      if (xhr.status != 200) {
+        notFound(str);
+      }
+    },
+    success: function (data) {
+      if ($(data).find('table[id=hor-minimalist-a]').length < 1 && $(data).find('table[id=hor-minimalist-c]').length < 1) { // suggestion ya da kelimenin anlamı bulunamadıysa
+        notFound(str);
+      }
+      else {
+        if ($(data).find('table[id=hor-minimalist-c]').length > 0) {
+          $('#content')
+            .append(safeResponse.cleanDomString($(data).find('table[id=hor-minimalist-c]').html()))
+            .append('<hr />');
+          $("table[id=hor-minimalist-c]").each(function () {
+            $(this).removeAttr('width');
+          });
+        }
+        for (var i = 0; i < $(data).find('table[id=hor-minimalist-a]').length; i++) {
+          $('#content').append(safeResponse.cleanDomString($(data).find('table[id=hor-minimalist-a]')[i].outerHTML)).append('<hr />');
+        }
+        $("table[id=hor-minimalist-a]").each(function () {
+          $(this).removeAttr('width')
+        });
+      }
+
+      $('#content').find('a[target!="_blank"]')
+        .on('click', function (e) {
+          e.preventDefault();
+          document.getElementById('search-input').value = $(this).text();
+          tdk($(this).text());
+        })
+        .prepend('<br />');
+    }
+  }).done(()=>document.getElementById('loading').style.display = 'none');;
+}
+
 document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('tureng').addEventListener('click', ()=>{
     tureng(document.getElementById('search-input').value);
+  });
+
+  document.getElementById('tdk').addEventListener('click', ()=>{
+    tdk(document.getElementById('search-input').value);
   });
 
   document.getElementById('settings').addEventListener('click', ()=>{
@@ -269,6 +324,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
   document.getElementById('search-input').addEventListener('keydown', function (e) {
+    if (e.keyCode == 13 && event.shiftKey) {
+      tdk(document.getElementById('search-input').value);
+      return false;
+    }
+
     if (e.keyCode === 13) {
       tureng(document.getElementById('search-input').value);
     }
