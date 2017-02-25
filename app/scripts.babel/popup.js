@@ -158,7 +158,7 @@ function sanitize(str) {
 
   document.getElementById('search-input').value = str;
 
-  str = encodeURIComponent(str);
+  //str = encodeURIComponent(str);
 
   document.getElementById('loading').style.display = 'block';
 
@@ -309,6 +309,89 @@ function tdk(str) {
   }).done(()=>document.getElementById('loading').style.display = 'none');;
 }
 
+
+
+function eksi(str, page) {
+  str = sanitize(str);
+
+  const xhr = new XMLHttpRequest();
+  if (typeof page !== 'undefined') {
+    xhr.open("GET", page, true);
+  } else {
+    xhr.open("GET", 'https://eksisozluk.com/?q=' + str, true); // pagination icin ?q='dan feragat.
+  }
+  xhr.onreadystatechange = function () {
+    document.getElementById('loading').style.display = 'none';
+
+    if (xhr.statusCode == 404) {
+      notFound(str);
+      return false;
+    }
+
+    if (xhr.readyState == 4) {
+      const responseURL = xhr.responseURL.split('?')[0];
+
+      const data = xhr.responseText;
+
+      if ($(data).find('#entry-list li').length < 1) {
+        $('#content').html(`<p>Aradığınız <strong>kelimeyi Ekşi Sözlük'te bulamadık!</strong> :( <br> Aşağıdaki de aradığınız değilse, kelimedeki ekleri silmek belki yardımcı olabilir ya da <a target="_blank" href="https://www.google.com/search?q=${str}">Google <i class="fi-eject"></i></a> </p>`);
+        if ($(data).find('a.suggested-title')) {
+          $('#content').append(safeResponse.cleanDomString($(data).find('a.suggested-title').parent().html()));
+        }
+      }
+      else {
+        for (var i = 0; i < $(data).find('#entry-list li').length; i++) {
+          const entry = safeResponse.cleanDomString($(data).find('#entry-list li')[i].outerHTML);
+          $('#content').append($(entry).find('.content'));
+
+          const auth_info = `<div class="text-right">
+    <p class="auth_info">${$(entry).find('.info .entry-author')[0].outerHTML} ${$(entry).find('.info .entry-date')[0].outerHTML}</p>
+</div>`;
+          $('#content').append(auth_info).append(`<hr />`);
+        }
+
+        if ($(data).find('.pager').length > 0) {
+          $('#content').append(`<select class="pager">`);
+
+          const currPage = $(data).find('.pager')[0].getAttribute('data-currentpage');
+
+          for (let i = 1; i <= $(data).find('.pager')[0].getAttribute('data-pagecount'); i++) {
+            if (i == currPage) {
+              $('#content .pager').append(`<option value="${responseURL}?p=${i}" selected>${i}</option>`);
+            }
+            else {
+              $('#content .pager').append(`<option value="${responseURL}?p=${i}">${i}</option>`);
+            }
+          }
+
+          $('#content .pager').on('change', function (e) {
+            //var optionSelected = $("option:selected", this);
+            const valueSelected = this.value;
+            eksi(str, valueSelected);
+          });
+        }
+
+        $('.auth_info a').on('click', function (e) {
+          e.preventDefault();
+          window.open('https://eksisozluk.com' + $(this).attr('href'))
+        });
+
+        $('.content a[class=url]').on('click', function (e) {
+          e.preventDefault();
+          window.open($(this).attr('href'))
+        });
+      }
+      $('.content a[class=b], a.suggested-title').on('click', function (e) {
+        e.preventDefault();
+        document.getElementById('search-input').value = $(this).text();
+        eksi($(this).text());
+      });
+    }
+  };
+  xhr.send();
+
+}
+
 document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('tureng').addEventListener('click', ()=>{
     tureng(document.getElementById('search-input').value);
@@ -316,6 +399,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   document.getElementById('tdk').addEventListener('click', ()=>{
     tdk(document.getElementById('search-input').value);
+  });
+
+  document.getElementById('eksi').addEventListener('click', ()=>{
+    eksi(document.getElementById('search-input').value);
   });
 
   document.getElementById('settings').addEventListener('click', ()=>{
@@ -326,6 +413,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('search-input').addEventListener('keydown', function (e) {
     if (e.keyCode == 13 && event.shiftKey) {
       tdk(document.getElementById('search-input').value);
+      return false;
+    }
+
+    if (e.keyCode == 13 && event.ctrlKey) {
+      eksi(document.getElementById('search-input').value);
       return false;
     }
 
