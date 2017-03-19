@@ -2,15 +2,16 @@
   "name": "__MSG_appName__",
   "version": "0.0.1",
   "manifest_version": 2,
+  "homepage_url": "https://chrome.google.com/webstore/detail/dgjbiomnpnpdickhihabccnbhpipddch",
   "description": "__MSG_appDescription__",
   "icons": {
     "16": "images/icon-16.png",
-    "128": "images/icon-128.png"
+    "128": "images/icon-128.png",
+    "256": "images/icon-256.png"
   },
   "default_locale": "en",
   "background": {
     "scripts": [
-      "scripts/chromereload.js",
       "scripts/background.js"
     ]
   },
@@ -46,8 +47,8 @@
   },
   "browser_action": {
     "default_icon": {
-      "19": "images/icon-19.png",
-      "38": "images/icon-38.png"
+      "128": "images/icon-128.png",
+      "256": "images/icon-256.png"
     },
     "default_title": "Multi Sözlük",
     "default_popup": "popup.html"
