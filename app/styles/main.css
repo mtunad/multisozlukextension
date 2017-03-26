@@ -21,3 +21,7 @@ table tbody th {
 .coming-soon {
   display: none;
 }
+
+.audio:hover, #difficultyIndex:hover {
+  cursor: pointer;
+}
