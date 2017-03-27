@@ -4,6 +4,10 @@ body {
   min-width: 650px;
 }
 
+a{
+  color: #0055ff
+}
+
 table {
   overflow: scroll;
 }
@@ -99,10 +103,12 @@ table tbody th {
 table {
   border-collapse: collapse;
   width: 100%;
+  margin:10px 0;
 }
 
 thead {
   font-size: 1.2em;
+  background: #eceeef
 }
 
 tbody tr:nth-child(2n) {
@@ -111,6 +117,19 @@ tbody tr:nth-child(2n) {
 
 tbody td {
   padding: 5px 10px;
+}
+td,th {
+  border:1px solid #dfdfdf;
+}
+.alert {
+  padding:20px;
+  font-size:1.2em;
+  border:1px solid #fff;
+}
+.alert-warning {
+    background-color: #fcf8e3;
+    border-color: #faf2cc;
+    color: #8a6d3b;
 }
 
 #content .content {
