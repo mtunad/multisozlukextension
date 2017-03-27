@@ -3,16 +3,13 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-
-    <link href="styles/bootstrap.min.css" rel="stylesheet">
     <link href="styles/font-awesome.min.css" rel="stylesheet">
     <link href="styles/main.css" rel="stylesheet">
     <link href="styles/loading.css" rel="stylesheet">
     <!-- endbuild -->
   </head>
   <body>
-    <div class="btn-group btn-group-justified">
+    <div class="btn-group btn-group-justified" id="main">
       <input type="text" class="form-control" id="search-input" placeholder="Search..." autocomplete="off">
       <button type="button" class="btn btn-primary" id="tureng">Tureng</button>
       <button type="button" class="btn btn-primary" id="tdk">TDK</button>
@@ -22,10 +19,7 @@
       </button>
     </div>
     <hr>
-
-
-
-    <div class="container">
+    <div class="container" id="result">
 
       <div id='loading' class="">
         <div class='outer-shadow'></div>
