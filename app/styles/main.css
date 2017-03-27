@@ -133,6 +133,9 @@ td,th {
 }
 
 #content .content {
-  background: #efefef;
   padding: 10px 15px;
+}
+
+.text-right{
+  text-align: right;
 }
