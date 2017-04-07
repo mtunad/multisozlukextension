@@ -25,3 +25,7 @@ table tbody th {
 .audio:hover, #difficultyIndex:hover {
   cursor: pointer;
 }
+
+table tbody a:hover {
+  cursor: pointer;
+}

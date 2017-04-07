@@ -274,8 +274,8 @@ function tureng(str) {
             $('#content table tbody:last').append(`
           <tr>
             <th scope="row" class="align-middle"">${safeResponse.cleanDomString(e.usage)}</th>
-            <td>${safeResponse.cleanDomString(e.word)} ${safeResponse.cleanDomString(e.type) != '' ? '<small>(' + safeResponse.cleanDomString(e.type) + ')</small>' : '' }</td>
-            <td>${safeResponse.cleanDomString(e.definition)} ${safeResponse.cleanDomString(e.definitionType) != '' ? '<small>(' + safeResponse.cleanDomString(e.definitionType) + ')</small>' : '' }</td>
+            <td><a data-href="${safeResponse.cleanDomString(e.word)}">${safeResponse.cleanDomString(e.word)}</a> ${safeResponse.cleanDomString(e.type) != '' ? '<small>(' + safeResponse.cleanDomString(e.type) + ')</small>' : '' }</td>
+            <td><a data-href="${safeResponse.cleanDomString(e.definition)}">${safeResponse.cleanDomString(e.definition)}</a> ${safeResponse.cleanDomString(e.definitionType) != '' ? '<small>(' + safeResponse.cleanDomString(e.definitionType) + ')</small>' : '' }</td>
           </tr>
           `);
           })
@@ -283,6 +283,10 @@ function tureng(str) {
         $('table thead').click(function (e) {
           const getParentTable = $(e.target).parent().parent().parent()[0];
           $(getParentTable).find('tbody').first().fadeToggle('fast')
+        });
+
+        $('table tbody a').click(function (e) {
+          tureng($(this).data('href'));
         });
 
         injectMSW('tureng');
