@@ -1,10 +1,8 @@
 {
-  "appName": {
-    "message": "Multi Sözlük",
-    "description": "The name of the application"
+  "extName": {
+    "message": "Multi Sözlük"
   },
-  "appDescription": {
-    "message": "Easily search selected text on Tureng",
-    "description": "The description of the application"
+  "extDescription": {
+    "message": "Easily search selected text on Tureng, TDK, Eksi Sozluk, Urban Dictionary"
   }
 }
