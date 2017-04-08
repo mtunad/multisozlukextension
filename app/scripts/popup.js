@@ -1,6 +1,6 @@
 'use strict';
 
-const baseURL = 'http://multisozluk.app';
+const baseURL = 'https://multisozluk.herokuapp.com';
 
 if (document.location.hash.length > 0) {
     tureng(document.location.hash.substr(1));
