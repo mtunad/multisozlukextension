@@ -367,8 +367,11 @@ function eksi(str, page) {
       const data = xhr.responseText;
 
       if ($(data).find('#entry-list li').length < 1) {
-        $('#content').html(`<p>Aradığınız <strong>kelimeyi Ekşi Sözlük'te bulamadık!</strong> :( <br> Aşağıdaki de aradığınız değilse, kelimedeki ekleri silmek belki yardımcı olabilir ya da <a target="_blank" href="https://www.google.com/search?q=${str}">Google <i class="fi-eject"></i></a> </p>`);
-        if ($(data).find('a.suggested-title')) {
+        $('#content').html(`<p>Aradığınız <strong>kelimeyi Ekşi Sözlük'te bulamadık!</strong> :( <br> Kelimedeki ekleri silmek belki yardımcı olabilir ya da <a target="_blank" href="https://www.google.com/search?q=${str}">Google <i class="fi-eject"></i></a> </p>`);
+
+        if ($(data).find('a.suggested-title').length > 0) {
+
+          $('#content').append(`<p>Aşağıdaki aradığınız şey olabilir mi?</p>`);
           $('#content').append(safeResponse.cleanDomString($(data).find('a.suggested-title').parent().html()));
         }
       }
