@@ -1,6 +1,6 @@
 {
   "name": "__MSG_extName__",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "manifest_version": 2,
   "homepage_url": "https://chrome.google.com/webstore/detail/dgjbiomnpnpdickhihabccnbhpipddch",
   "description": "__MSG_extDescription__",
