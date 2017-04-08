@@ -59,11 +59,9 @@ function injectMSW(dictionary = 'tureng') {
                 $('.bookmark').click((el)=>{
                     if ($(el.target).hasClass('fa-bookmark') || $(el.target).hasClass('fa-bookmark-o')) {
                         if ($(el.target).hasClass('fa-bookmark-o')) {
-                            const word = ($(el.target).parent().parent().find(':nth-child(2)'))
-                                .clone().children().remove().end().text().trim();
+                            const word = ($(el.target).parent().parent().find(':nth-child(2) a')).text();
 
-                            const definition = $(el.target).parent().parent().find('td').eq(1)
-                                .clone().children().remove().end().text().trim();
+                            const definition = ($(el.target).parent().parent().find(':nth-child(3) a')).text();
 
                             const direction = $(el.target).parent().parent().parent().parent().find('thead th').eq(1).text() == 'İngilizce' ? 'tr' : 'en';
 
