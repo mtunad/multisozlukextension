@@ -139,7 +139,7 @@ function putDifficultyIndex(str) {
                     const difficulty = $(data).find('#difficulty-box');
 
                     if (difficulty.length > 0) {
-                        $('#content .difficulty').prepend(`<p class="text-right"><span class="badge badge-pill badge-info" id="difficultyIndex" title="dictionary.com'daki zorluk indeksi: ${safeResponse.cleanDomString(difficulty.data('difficulty'))}">${difficulty.find('.subtext')[0].innerText}</a></span></p>`);
+                        $('#content .difficulty').prepend(`<p class="text-right"><span class="badge badge-pill badge-info" id="difficultyIndex" title="dictionary.com'daki zorluk indeksi: ${safeResponse.cleanDomString(difficulty.data('difficulty'))}">${safeResponse.cleanDomString(difficulty.find('.subtext')[0].innerText)}</a></span></p>`);
                     }
 
                     $('#difficultyIndex').click(function () {
@@ -219,7 +219,7 @@ function tureng(str) {
 
         $(data).find('ul.suggestion-list li').each((i, el) => {
           $('#content .list-group').append(`
-            <a href="#" class="list-group-item list-group-item-action">${el.textContent.trim()}</a>
+            <a href="#" class="list-group-item list-group-item-action">${safeResponse.cleanDomString(el.textContent.trim())}</a>
           `);
         });
 
