@@ -1,6 +1,6 @@
 {
   "name": "__MSG_extName__",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "manifest_version": 2,
   "homepage_url": "https://chrome.google.com/webstore/detail/dgjbiomnpnpdickhihabccnbhpipddch",
   "description": "__MSG_extDescription__",
@@ -20,7 +20,6 @@
     "http://*/*",
     "https://*/*",
     "background",
-    "contentSettings",
     "contextMenus",
     "storage"
   ],
@@ -43,7 +42,7 @@
     }
   ],
   "omnibox": {
-    "keyword": "OMNIBOX-KEYWORD"
+    "keyword": "ms"
   },
   "browser_action": {
     "default_icon": {
