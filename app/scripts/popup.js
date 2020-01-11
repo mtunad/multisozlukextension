@@ -302,32 +302,33 @@ function tureng(str) {
 function tdk(str) {
   str = sanitize(str);
 
+
   $.ajax({
-    url: 'http://www.tdk.gov.tr/index.php?option=com_gts&arama=gts&kelime=' + str,
-    type: 'GET',
+    type: "GET",
+    url: 'https://sozluk.gov.tr/gts?ara='+ str,
     complete: function(xhr) {
       if (xhr.status != 200) {
         notFound(str);
       }
     },
     success: function (data) {
-      if ($(data).find('table[id=hor-minimalist-a]').length < 1 && $(data).find('table[id=hor-minimalist-c]').length < 1) { // suggestion ya da kelimenin anlamı bulunamadıysa
+      console.log(data);
+      if (data.error == "Sonuç bulunamadı") {
         notFound(str);
-      }
-      else {
-        if ($(data).find('table[id=hor-minimalist-c]').length > 0) {
+      } else {
+
+
+        console.log(data[0].anlamlarListe);
+        $('#content')
+            .append(`<h5>${data[0].madde}</h5>`)
+            .append(`<p><i>${data[0].lisan}</i></p>`)
+            .append(`<hr>`)
+
+        $(data[0].anlamlarListe).each(function(key, meaning){
+          console.log(meaning.anlam);
           $('#content')
-            .append(safeResponse.cleanDomString($(data).find('table[id=hor-minimalist-c]').html()))
+            .append(`<p>${key+1}. ${safeResponse.cleanDomString(meaning.anlam)}</p>`)
             .append('<hr />');
-          $("table[id=hor-minimalist-c]").each(function () {
-            $(this).removeAttr('width');
-          });
-        }
-        for (var i = 0; i < $(data).find('table[id=hor-minimalist-a]').length; i++) {
-          $('#content').append(safeResponse.cleanDomString($(data).find('table[id=hor-minimalist-a]')[i].outerHTML)).append('<hr />');
-        }
-        $("table[id=hor-minimalist-a]").each(function () {
-          $(this).removeAttr('width')
         });
       }
 
@@ -338,7 +339,8 @@ function tdk(str) {
           tdk($(this).text());
         })
         .prepend('<br />');
-    }
+    },
+    dataType: "json",
   }).done(()=>document.getElementById('loading').style.display = 'none');
 }
 
@@ -365,8 +367,9 @@ function eksi(str, page) {
       const responseURL = xhr.responseURL.split('?')[0];
 
       const data = xhr.responseText;
-
-      if ($(data).find('#entry-list li').length < 1) {
+      
+      if ($(data).find('#entry-item-list li').length < 1) {
+        
         $('#content').html(`<p>Aradığınız <strong>kelimeyi Ekşi Sözlük'te bulamadık!</strong> :( <br> Kelimedeki ekleri silmek belki yardımcı olabilir ya da <a target="_blank" href="https://www.google.com/search?q=${str}">Google <i class="fi-eject"></i></a> </p>`);
 
         if ($(data).find('a.suggested-title').length > 0) {
@@ -376,8 +379,8 @@ function eksi(str, page) {
         }
       }
       else {
-        for (var i = 0; i < $(data).find('#entry-list li').length; i++) {
-          const entry = safeResponse.cleanDomString($(data).find('#entry-list li')[i].outerHTML);
+        for (var i = 0; i < $(data).find('#entry-item-list li').length; i++) {
+          const entry = safeResponse.cleanDomString($(data).find('#entry-item-list li')[i].outerHTML);
           $('#content').append($(entry).find('.content'));
 
           const auth_info = `<div class="text-right">
