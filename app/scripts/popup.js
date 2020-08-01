@@ -320,8 +320,8 @@ function tdk(str) {
 
         console.log(data[0].anlamlarListe);
         $('#content')
-            .append(`<h5>${data[0].madde}</h5>`)
-            .append(`<p><i>${data[0].lisan}</i></p>`)
+            .append(`<h5>${safeResponse.cleanDomString(data[0].madde)}</h5>`)
+            .append(`<p><i>${safeResponse.cleanDomString(data[0].lisan)}</i></p>`)
             .append(`<hr>`)
 
         $(data[0].anlamlarListe).each(function(key, meaning){
