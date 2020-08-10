@@ -156,8 +156,6 @@ function sanitize(str) {
 
   document.getElementById('search-input').value = str;
 
-  //str = encodeURIComponent(str);
-
   document.getElementById('loading').style.display = 'block';
 
   document.getElementsByClassName('inner-shadow')[0].style.backgroundColor = '#'+((1<<24)*Math.random()|0).toString(16);
@@ -457,6 +455,90 @@ function urban(str) {
   }).done(()=>document.getElementById('loading').style.display = 'none');
 }
 
+function englishDeutschTranslation(str) {
+  str = sanitize(str);
+  
+  $.ajax({
+    url: 'https://www.linguee.com/english-german/search?source=auto&query=' + str,
+    type: 'GET',
+    error: function() {
+      notFound(str);
+    },
+    success: function (data) {
+      if ($(data).find("h1.noresults").length > 0) {
+        notFound(str);
+        return;
+      }
+      
+      if ($(data).find("h1.didyoumean").length > 0) {
+        const corrected = safeResponse.cleanDomString($(data).find("h1.didyoumean .corrected").text().trim());
+        const didyoumean = safeResponse.cleanDomString($(data).find("h1.didyoumean").text());
+
+        $("#content").append(`<ul class="list-group">
+          <li class="list-group-item"><a href="#" onClick="englishDeutschTranslation('${ corrected }')">${ didyoumean }</a> </li>
+        </ul>`);
+        return;
+      }
+
+      const mainTermFlag = $(data).find(".isMainTerm").attr("data-source-lang") == "EN" ? "great-britain" : "deutschland";
+      const foreignTermFlag = $(data).find(".isForeignTerm").attr("data-source-lang") == "DE" ? "deutschland" : "great-britain";
+      
+      $(data).find(".isMainTerm .exact .lemma").each((index, exactMatch) => {
+        let matchTitle = $(exactMatch).find("h2.line .dictLink").text();
+        let matchType = $(exactMatch).find("h2.line .tag_lemma .tag_wordtype").text();
+
+        $('#content')
+          .append(`<div class="flag ${ mainTermFlag }"></div> <h5>${safeResponse.cleanDomString(matchTitle)} <small>${ safeResponse.cleanDomString(matchType) }</small></h5>`)
+          .append(`<div class="list-group"></div><br>`);
+
+        $(exactMatch).find(".meaninggroup .translation.featured").each((index, translation) => {
+          $('#content .list-group')
+            .last()
+            .append(`<a class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+              <strong class="mb-1">${ safeResponse.cleanDomString($(translation).find(".dictLink").text() ) }</strong>
+              <small class="text-muted">${ safeResponse.cleanDomString($(translation).find(".tag_type").text())}</small>
+            </div>
+            <small class="mb-1">
+              ${ safeResponse.cleanDomString($(translation).find(".example .tag_s").text()) }
+            </small>
+            <small class="text-muted">
+              ${ safeResponse.cleanDomString($(translation).find(".example .tag_t").text()) }
+            </small>
+          </a>`);
+        });
+      });
+
+      $(data).find(".isForeignTerm .exact .lemma").each((index, exactMatch) => {
+        let matchTitle = $(exactMatch).find("h2.line .dictLink").text();
+        let matchType = $(exactMatch).find("h2.line .tag_lemma .tag_wordtype").text();
+
+        $('#content')
+          .append(`<div class="flag ${ foreignTermFlag }"></div> <h5>${safeResponse.cleanDomString(matchTitle)} <small>${ safeResponse.cleanDomString(matchType) }</small></h5>`)
+          .append(`<div class="list-group"></div><br>`);
+
+        $(exactMatch).find(".meaninggroup .translation.featured").each((index, translation) => {
+          $('#content .list-group')
+            .last()
+            .append(`<a class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+              <strong class="mb-1">${ safeResponse.cleanDomString($(translation).find(".dictLink").text() ) }</strong>
+              <small class="text-muted">${ safeResponse.cleanDomString($(translation).find(".tag_type").text())}</small>
+            </div>
+            <small class="mb-1">
+              ${ safeResponse.cleanDomString($(translation).find(".example .tag_s").text()) }
+            </small>
+            <small class="text-muted">
+              ${ safeResponse.cleanDomString($(translation).find(".example .tag_t").text()) }
+            </small>
+          </a>`);
+        });
+      });
+    }
+  }).done(()=>document.getElementById('loading').style.display = 'none');
+}
+
+
 document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('tureng').addEventListener('click', ()=>{
     tureng(document.getElementById('search-input').value);
@@ -468,6 +550,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   document.getElementById('eksi').addEventListener('click', ()=>{
     eksi(document.getElementById('search-input').value);
+  });
+
+  document.getElementById('englishDeutschTranslation').addEventListener('click', ()=>{
+    englishDeutschTranslation(document.getElementById('search-input').value);
   });
 
   document.getElementById('urban').addEventListener('click', ()=>{
