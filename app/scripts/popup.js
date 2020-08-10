@@ -432,7 +432,7 @@ function urban(str) {
   str = sanitize(str);
 
   $.ajax({
-    url: 'http://www.urbandictionary.com/define.php?term=' + str,
+    url: 'https://www.urbandictionary.com/define.php?term=' + str,
     type: 'GET',
     success: function (data) {
       if ($(data).find('.no-results').length > 0) {
