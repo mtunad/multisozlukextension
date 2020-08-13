@@ -1,6 +1,6 @@
 {
   "name": "__MSG_extName__",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "manifest_version": 2,
   "homepage_url": "https://github.com/mtunad/multisozlukextension",
   "description": "__MSG_extDescription__",
@@ -16,7 +16,7 @@
     ]
   },
   "permissions": [
-    "tabs",
+    "activeTab",
     "http://*/*",
     "https://*/*",
     "background",

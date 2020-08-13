@@ -310,7 +310,6 @@ function tdk(str) {
       }
     },
     success: function (data) {
-      console.log(data);
       if (data.error == "Sonuç bulunamadı") {
         notFound(str);
       } else {
