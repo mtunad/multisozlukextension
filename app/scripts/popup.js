@@ -401,7 +401,6 @@ function eksi(str, page) {
           }
 
           $('#content .pager').on('change', function (e) {
-            //var optionSelected = $("option:selected", this);
             const valueSelected = this.value;
             eksi(str, valueSelected);
           });
@@ -476,6 +475,11 @@ function englishDeutschTranslation(str) {
         $("#content").append(`<ul class="list-group">
           <li class="list-group-item"><a href="#" onClick="englishDeutschTranslation('${ corrected }')">${ didyoumean }</a> </li>
         </ul>`);
+        return;
+      }
+
+      if ($(data).find(".isMainTerm .exact .lemma").length < 1 && $(data).find(".isForeignTerm .exact .lemma").length < 1) {
+        notFound(str);
         return;
       }
 
