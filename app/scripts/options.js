@@ -61,12 +61,27 @@ function saveAutoSelect() {
     });
 }
 
+function saveGermanFirst() {
+    const germanFirst = $('#germanFirst').text() == 'Aktif' ? false : true;
+
+    chrome.storage.sync.set({
+        germanFirst: germanFirst
+    }, function() {
+        if ($('#germanFirst').text() != 'Aktif') {
+            $('#germanFirst').addClass('btn-primary').removeClass('btn-outline-primary').text('Aktif');
+        } else {
+            $('#germanFirst').removeClass('btn-primary').addClass('btn-outline-primary').text('Aktifleştir');
+        }
+    });
+}
+
 function restore_options() {
     chrome.storage.sync.get({
         jwt: '',
         rightClickMenu: false,
         difficultyIndex: false,
-        autoSelect: true
+        autoSelect: true,
+        germanFirst: false
     }, function(items) {
         document.getElementById('webToken').value = items.jwt;
         
@@ -87,6 +102,13 @@ function restore_options() {
         } else {
             $('#autoSelect').removeClass('btn-primary').addClass('btn-outline-primary').text('Aktifleştir');
         }
+
+        if (items.germanFirst) {
+            $('#germanFirst').addClass('btn-primary').removeClass('btn-outline-primary').text('Aktif');
+        } else {
+            $('#germanFirst').removeClass('btn-primary').addClass('btn-outline-primary').text('Aktifleştir');
+        }
+
     });
 }
 
@@ -99,3 +121,5 @@ document.querySelector('#difficultyIndex').addEventListener('click',
     saveDifficultyIndex);
 document.querySelector('#autoSelect').addEventListener('click',
     saveAutoSelect);
+document.querySelector('#germanFirst').addEventListener('click',
+    saveGermanFirst);

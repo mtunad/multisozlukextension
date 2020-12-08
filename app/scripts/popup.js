@@ -6,9 +6,23 @@ if (document.location.hash.length > 0) {
     tureng(document.location.hash.substr(1));
 } else {
     chrome.storage.sync.get({
-        autoSelect: true
+        autoSelect: true,
+        germanFirst: true
     }, function (items) {
+        
         if (items.autoSelect == true) {
+          if (items.germanFirst) {
+            chrome.tabs.executeScript({
+                code: 'var selection = window.getSelection();if (selection.toString().length > 0){window.getSelection().toString();}else {selection.modify("move", "backward", "word");selection.modify("extend", "forward", "word");window.getSelection().toString();}'
+            }, function (selection) {
+                let selected = selection[0].trim();
+                document.getElementById('search-input').value = selected;
+                if (selected.length > 0) { 
+                  germanFirstSearch(selected);
+                }
+            });
+          }
+          else {
             chrome.tabs.executeScript({
                 code: 'var selection = window.getSelection();if (selection.toString().length > 0){window.getSelection().toString();}else {selection.modify("move", "backward", "word");selection.modify("extend", "forward", "word");window.getSelection().toString();}'
             }, function (selection) {
@@ -16,6 +30,7 @@ if (document.location.hash.length > 0) {
                 document.getElementById('search-input').value = selected;
                 if (selected.length > 0) tureng(selected);
             });
+          }
         }
     });
 }
@@ -540,6 +555,43 @@ function englishDeutschTranslation(str) {
     }
   }).done(()=>document.getElementById('loading').style.display = 'none');
 }
+
+function germanFirstSearch(str) {
+  str = sanitize(str);
+  
+  $.ajax({
+    url: 'https://www.linguee.com/english-german/search?source=auto&query=' + str,
+    type: 'GET',
+    error: function() {
+      notFound(str);
+    },
+    success: function (data) {
+      if ($(data).find("h1.noresults").length > 0) {
+        tureng(str);
+        return;
+      }
+      
+      if ($(data).find("h1.didyoumean").length > 0) {
+        const corrected = safeResponse.cleanDomString($(data).find("h1.didyoumean .corrected").text().trim());
+        const didyoumean = safeResponse.cleanDomString($(data).find("h1.didyoumean").text());
+
+        $("#content").append(`<ul class="list-group">
+          <li class="list-group-item"><a href="#" onClick="englishDeutschTranslation('${ corrected }')">${ didyoumean }</a> </li>
+        </ul>`);
+        return;
+      }
+
+      if ($(data).find(".isMainTerm .exact .lemma").length < 1 && $(data).find(".isForeignTerm .exact .lemma").length < 1) {
+        tureng(str);
+        return;
+      }
+
+      englishDeutschTranslation(str);
+
+    }
+  }).done(()=>document.getElementById('loading').style.display = 'none');
+}
+
 
 
 document.addEventListener('DOMContentLoaded', ()=>{
