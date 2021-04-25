@@ -7,7 +7,7 @@ if (document.location.hash.length > 0) {
 } else {
     chrome.storage.sync.get({
         autoSelect: true,
-        germanFirst: true
+        germanFirst: false
     }, function (items) {
         
         if (items.autoSelect == true) {

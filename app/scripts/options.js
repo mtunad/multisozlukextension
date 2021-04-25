@@ -62,7 +62,7 @@ function saveAutoSelect() {
 }
 
 function saveGermanFirst() {
-    const germanFirst = $('#germanFirst').text() == 'Aktif' ? true : false;
+    const germanFirst = $('#germanFirst').text() == 'Aktif' ? false : true;
 
     chrome.storage.sync.set({
         germanFirst: germanFirst
