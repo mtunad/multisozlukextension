@@ -6,14 +6,10 @@ chrome.runtime.onInstalled.addListener(details => {
 
 // chrome.browserAction.setBadgeText({text: '\'Allo'});
 
-console.log('\'Allo \'Allo! Event Page for Browser Action');
-
 chrome.storage.sync.get({
   rightClickMenu: false
 }, function(items) {
   if (items.rightClickMenu) createContextMenu();
-    console.log(items.rightClickMenu);
-    
 });
 
 function createContextMenu() {
